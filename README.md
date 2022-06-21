@@ -1,0 +1,7 @@
+# Thundy
+
+Thundy is a small project that structures, formats, and presents relevant statistics in sortable and filterable tables for objects in the game [War Thunder](https://warthunder.com/en). These are objects like ground vehicles (tanks, APCs, anti-air, etc.), air vehicles (planes, helicopters), missiles, and radars. All of these objects have vastly different parameters defining how they behave in the game (physics, game balance, etc.), and these parameters are commonly used when comparing objects and helping players decide their loadouts, make decisions on what vehicles to invest time into upgrading, and much more.
+
+Currently, the only "official" source for this information is the [War Thunder wiki](https://wiki.warthunder.com/Main_Page). While it contains a lot of good information, it is community maintaned, and thus it suffers from problem such as incomplete or outdated information, subjective information, and commonly no information at all, especially regarding new content.
+
+Luckily, some dedicated community members have built tools to extract the raw data from the game files ([data mining](https://en.wikipedia.org/wiki/Data_mining)), have made this data available to the community, and keep it updated regularly as new content is added. This project uses one of the more popular sources, [War-Thunder-Datamine by gszabi99](https://github.com/gszabi99/War-Thunder-Datamine).
