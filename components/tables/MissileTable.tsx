@@ -339,9 +339,7 @@ export function MissileTable({ missiles }: MissileTableProps) {
           <UnstyledButton
             onClick={(event) => {
               let i = toCompare.indexOf(row);
-              if (i >= 0) {
-                toCompareHandlers.remove(i);
-              } else {
+              if (i < 0) {
                 toCompareHandlers.append(row);
               }
             }}
