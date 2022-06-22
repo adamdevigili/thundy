@@ -11,7 +11,7 @@ export default function About() {
         About
       </Title>
       <Text color="dimmed" align="center" size="xl" sx={{}} mx="auto" mt="xl">
-        v0.0.1
+        v0.0.2
       </Text>
       <Text color="dimmed" align="center" size="lg" sx={{ a: { color: '#666' } }} mx="auto" mt="xl">
         <a href="https://github.com/adamdevigili/thundy" target="_blank">
