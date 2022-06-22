@@ -34,6 +34,15 @@ import Link from 'next/link';
 import { useListState } from '@mantine/hooks';
 // import flags from '../../data/flags.json';
 
+const comparisonColors = {
+  0: '#21A321', // Green
+  1: '#2D882D',
+  2: '#2D582D',
+  3: '#722D2D',
+  4: '#9C2A2A',
+  5: '#CE1B1B', // Red
+};
+
 const useStyles = createStyles((theme) => ({
   header: {
     position: 'sticky',
@@ -101,6 +110,26 @@ export interface MissileRow {
   machMax: string;
   timeFire: string;
   sustainerTimeFire: string;
+}
+
+export interface Comparable {
+  value: string;
+  color?: string;
+  higherBetter?: boolean;
+}
+
+export interface MissileRowComparable {
+  origin: string;
+  name: string;
+  guidanceType: string;
+
+  // Comparable values
+  warmUpTime?: Comparable;
+  workTime?: Comparable;
+  loadFactorMax?: Comparable;
+  machMax?: Comparable;
+  timeFire?: Comparable;
+  sustainerTimeFire?: Comparable;
 }
 
 // interface MissileTableProps {
@@ -296,23 +325,142 @@ function sortData(
   );
 }
 
+// function compareMissileRowComparable(a: MissileRowComparable, b: MissileRowComparable, sortBy: keyof MissileRow) {
+//   if (a[sortBy].toLowerCase() < b.value.toLowerCase()) {
+//     return -1;
+//   }
+//   if (a.value.toLowerCase() > b.value.toLowerCase()) {
+//     return 1;
+//   }
+//   return 0;
+// }
+
+// function sortDataComparable(
+//   data: MissileRowComparable[],
+//   payload: { sortBy: keyof MissileRow; reversed: boolean; search: string }
+// ) {
+//   if (!payload.sortBy) {
+//     return filterDataComparable(data, payload.search);
+//   }
+
+//   return filterDataComparable(
+//     [...data].sort(compareComparable),
+//     payload.search
+//   );
+// }
+
+// function filterDataComparable(data: MissileRowComparable[], search: string) {
+//   const keys = Object.keys(data[0]);
+//   const query = search.toLowerCase().trim();
+//   return data.filter((item) => keys.some((key) => item[key].toLowerCase().includes(query)));
+// }
+
+export interface ComparableWithIndex {
+  comparable: Comparable;
+  index: number;
+}
+
+// Color the fields of the provided rows, indicating the "best" as green, the "worst" as red, and apply a gradient
+// for the values in between
+function convertMissileRowToMissileRowComparable(data: MissileRow[]): MissileRowComparable[] {
+  let ret: MissileRowComparable[] = [];
+
+  // build map of type -> array of object with value and index
+  let compDict: { [key: string]: ComparableWithIndex[] } = {};
+
+  if (data.length != 0) {
+    let i = 0;
+    for (var row of data) {
+      // console.log(row);
+      let mrCmp: MissileRowComparable = {
+        origin: row.origin,
+        name: row.name,
+        guidanceType: row.guidanceType,
+      };
+
+      ret.push(mrCmp);
+
+      for (const [k, v] of Object.entries(row)) {
+        // Non-comparable fields
+        if (!['origin', 'name', 'guidanceType'].includes(k)) {
+          let cmp: ComparableWithIndex = {
+            index: i,
+            comparable: {
+              higherBetter: true,
+              value: v,
+            },
+          };
+
+          if (['warmUpTime', 'workTime'].includes(k)) {
+            cmp.comparable.higherBetter = false;
+          }
+
+          // console.log('compDict', compDict);
+
+          if (k in compDict) {
+            compDict[k].push(cmp);
+          } else {
+            compDict[k] = [cmp];
+          }
+        }
+      }
+      i++;
+    }
+
+    // Sort the arrays for all the fields, apply the color
+    for (const [k, v] of Object.entries(compDict)) {
+      // console.log('k', k, 'v', v);
+      v.sort((a, b) => {
+        if (!v[0].comparable.higherBetter) {
+          return a.comparable.value.localeCompare(b.comparable.value, 'en', { numeric: true });
+        }
+        return b.comparable.value.localeCompare(a.comparable.value, 'en', { numeric: true });
+      });
+
+      // Iterate over the sorted fields, populate the color based on the location (for now), and update the returning
+      // array with this new field with the color supplied
+      v.forEach((field, i) => {
+        if (data.length > 1 && field.comparable.value !== '-') {
+          // if (!field.comparable.higherBetter) {
+          //   field.comparable.color = comparisonColors[i];
+          // } else {
+          //   field.comparable.color = comparisonColors[Object.keys(comparisonColors).length - i - 1];
+          // }
+
+          field.comparable.color = comparisonColors[i];
+        } else {
+          field.comparable.color = 'none';
+        }
+        ret[field.index][k] = field.comparable;
+      });
+    }
+  }
+
+  console.log(compDict);
+
+  //
+
+  return ret;
+}
+
 export function MissileTable({ missiles }: MissileTableProps) {
-  // console.log("Missile Table", missiles)
-  // const md: MissileData = {
-  //   missiles: missileData,
-  // }
   const data = convertMissilesToRows(missiles);
   const { classes, cx } = useStyles();
 
   const [search, setSearch] = useState('');
 
+  // Main table
   const [sortedData, setSortedData] = useState(data);
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
   const [sortBy, setSortBy] = useState<keyof MissileRow>(null);
 
+  // Compare table
   const [sortedDataCompare, setSortedDataCompare] = useState([]);
   const [reverseSortDirectionCompare, setReverseSortDirectionCompare] = useState(false);
   const [sortByCompare, setSortByCompare] = useState<keyof MissileRow>(null);
+
+  const [toCompare, toCompareHandlers] = useListState<MissileRow>([]);
+  const [toCompareComparable, toCompareComparableHandlers] = useListState<MissileRowComparable>([]);
 
   const [scrolled, setScrolled] = useState(false);
 
@@ -332,8 +480,6 @@ export function MissileTable({ missiles }: MissileTableProps) {
   const handleCompareAdd = (event: React.MouseEventHandler<HTMLInputElement>) => {
     console.log('added');
   };
-
-  const [toCompare, toCompareHandlers] = useListState<MissileRow>([]);
 
   const setSortingCompare = (field: keyof MissileRow) => {
     const reversed = field === sortByCompare ? !reverseSortDirectionCompare : false;
@@ -358,16 +504,6 @@ export function MissileTable({ missiles }: MissileTableProps) {
             }}
           >
             {toCompare.indexOf(row) < 0 ? <SquarePlus /> : <SquareMinus />}
-            {/* <Checkbox
-              onChange={(event) => {
-                let i = toCompare.indexOf(row.name);
-                if (i >= 0) {
-                  toCompareHandlers.remove(i);
-                } else {
-                  toCompareHandlers.append(row.name);
-                }
-              }}
-            /> */}
           </UnstyledButton>
         </td>
         <td>
@@ -387,7 +523,9 @@ export function MissileTable({ missiles }: MissileTableProps) {
     );
   });
 
-  const comparing = toCompare.map((row) => {
+  const comparingColored = convertMissileRowToMissileRowComparable(toCompare);
+
+  const comparing = toCompare.map((row, i) => {
     const nameLink = `/missiles/${row.name}`;
     return (
       <tr key={row.name}>
@@ -403,16 +541,6 @@ export function MissileTable({ missiles }: MissileTableProps) {
             }}
           >
             <SquareMinus />
-            {/* <Checkbox
-              onChange={(event) => {
-                let i = toCompare.indexOf(row.name);
-                if (i >= 0) {
-                  toCompareHandlers.remove(i);
-                } else {
-                  toCompareHandlers.append(row.name);
-                }
-              }}
-            /> */}
           </UnstyledButton>
         </td>
         <td>
@@ -422,15 +550,21 @@ export function MissileTable({ missiles }: MissileTableProps) {
         </td>
         <td>{row.origin}</td>
         <td>{row.guidanceType}</td>
-        <td>{row.loadFactorMax}</td>
-        <td>{row.machMax}</td>
-        <td>{row.warmUpTime}</td>
-        <td>{row.workTime}</td>
-        <td>{row.timeFire}</td>
-        <td>{row.sustainerTimeFire}</td>
+        <td style={{ backgroundColor: comparingColored[i].loadFactorMax.color }}>
+          {row.loadFactorMax}
+        </td>
+        <td style={{ backgroundColor: comparingColored[i].machMax.color }}>{row.machMax}</td>
+        <td style={{ backgroundColor: comparingColored[i].warmUpTime.color }}>{row.warmUpTime}</td>
+        <td style={{ backgroundColor: comparingColored[i].workTime.color }}>{row.workTime}</td>
+        <td style={{ backgroundColor: comparingColored[i].timeFire.color }}>{row.timeFire}</td>
+        <td style={{ backgroundColor: comparingColored[i].sustainerTimeFire.color }}>
+          {row.sustainerTimeFire}
+        </td>
       </tr>
     );
   });
+
+  // 1A1B1E
 
   // const comparing = toCompare.map((value, index) => (
   //   <>
