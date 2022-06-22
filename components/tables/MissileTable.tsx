@@ -457,7 +457,7 @@ export function MissileTable({ missiles }: MissileTableProps) {
 
   return (
     <>
-      <Title my="sm"> Missiles </Title>
+      <Title my="sm">Missiles</Title>
       <TextInput
         placeholder="Search by any field"
         my="md"
