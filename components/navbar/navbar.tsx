@@ -165,7 +165,7 @@ export function NavbarMinimalColored({ path }) {
   // console.log(links);
   // console.log(active);
   return (
-    <Navbar width={{ base: 60 }} p="sm" className={classes.navbar}>
+    <Navbar width={{ base: 60 }} fixed={true} p="sm" className={classes.navbar}>
       {/* <Center>
         <NavbarLink icon={Home2} label="Home" path="/" />
       </Center> */}
