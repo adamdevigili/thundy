@@ -9,7 +9,7 @@ import { NavbarMinimalColored } from './navbar/navbar';
 import { useRouter } from 'next/router';
 
 export default function Layout({ children }) {
-  const [scrollLocked, setScrollLocked] = useScrollLock(false);
+  // const [scrollLocked, setScrollLocked] = useScrollLock(false);
 
   const router = useRouter();
   return (

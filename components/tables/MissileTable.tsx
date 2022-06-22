@@ -13,11 +13,25 @@ import {
   Title,
   Tooltip,
   Anchor,
+  List,
+  Checkbox,
+  Button,
+  ListItem,
 } from '@mantine/core';
-import { Selector, ChevronDown, ChevronUp, Search } from 'tabler-icons-react';
+import {
+  Selector,
+  ChevronDown,
+  ChevronUp,
+  Search,
+  Plus,
+  CodePlus,
+  SquarePlus,
+  SquareMinus,
+} from 'tabler-icons-react';
 import { US } from 'country-flag-icons/string/3x2';
 import { Guidance, Missile } from '../../data/missile';
 import Link from 'next/link';
+import { useListState } from '@mantine/hooks';
 // import flags from '../../data/flags.json';
 
 const useStyles = createStyles((theme) => ({
@@ -95,6 +109,10 @@ export interface MissileRow {
 
 export interface MissileTableProps {
   missiles: Missile[];
+}
+
+interface ThCompareProps {
+  description: string;
 }
 
 interface ThProps {
@@ -234,6 +252,24 @@ function Th({ children, reversed, sorted, onSort, description }: ThProps) {
   );
 }
 
+function ThCompare({ description }: ThCompareProps) {
+  const { classes } = useStyles();
+  // const Icon = sorted ? (reversed ? ChevronUp : ChevronDown) : Selector;
+  return (
+    <th className={classes.th}>
+      <Tooltip label={description} position="right" transitionDuration={200}>
+        <UnstyledButton className={classes.control}>
+          {/* <Group>
+            <Text weight={500} size="sm">
+            </Text>
+            <Center className={classes.icon}><Icon size={14} /></Center>
+          </Group> */}
+        </UnstyledButton>
+      </Tooltip>
+    </th>
+  );
+}
+
 function filterData(data: MissileRow[], search: string) {
   const keys = Object.keys(data[0]);
   const query = search.toLowerCase().trim();
@@ -270,6 +306,7 @@ export function MissileTable({ missiles }: MissileTableProps) {
 
   const [search, setSearch] = useState('');
   const [sortedData, setSortedData] = useState(data);
+  // const [toCompare, setToCompate] = useState([]);
   const [sortBy, setSortBy] = useState<keyof MissileRow>(null);
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
 
@@ -288,10 +325,40 @@ export function MissileTable({ missiles }: MissileTableProps) {
     setSortedData(sortData(data, { sortBy, reversed: reverseSortDirection, search: value }));
   };
 
+  const handleCompareAdd = (event: React.MouseEventHandler<HTMLInputElement>) => {
+    console.log('added');
+  };
+
+  const [toCompare, toCompareHandlers] = useListState<MissileRow>([]);
+
   const rows = sortedData.map((row) => {
     const nameLink = `/missiles/${row.name}`;
     return (
       <tr key={row.name}>
+        <td>
+          <UnstyledButton
+            onClick={(event) => {
+              let i = toCompare.indexOf(row);
+              if (i >= 0) {
+                toCompareHandlers.remove(i);
+              } else {
+                toCompareHandlers.append(row);
+              }
+            }}
+          >
+            <SquarePlus />
+            {/* <Checkbox
+              onChange={(event) => {
+                let i = toCompare.indexOf(row.name);
+                if (i >= 0) {
+                  toCompareHandlers.remove(i);
+                } else {
+                  toCompareHandlers.append(row.name);
+                }
+              }}
+            /> */}
+          </UnstyledButton>
+        </td>
         <td>
           <Link href={nameLink}>
             <Anchor<'a'> size="sm">{row.name}</Anchor>
@@ -309,20 +376,88 @@ export function MissileTable({ missiles }: MissileTableProps) {
     );
   });
 
+  const comparing = toCompare.map((row) => {
+    const nameLink = `/missiles/${row.name}`;
+    return (
+      <tr key={row.name}>
+        <td>
+          <UnstyledButton
+            onClick={(event) => {
+              let i = toCompare.indexOf(row);
+              if (i >= 0) {
+                toCompareHandlers.remove(i);
+              } else {
+                toCompareHandlers.append(row);
+              }
+            }}
+          >
+            <SquareMinus />
+            {/* <Checkbox
+              onChange={(event) => {
+                let i = toCompare.indexOf(row.name);
+                if (i >= 0) {
+                  toCompareHandlers.remove(i);
+                } else {
+                  toCompareHandlers.append(row.name);
+                }
+              }}
+            /> */}
+          </UnstyledButton>
+        </td>
+        <td>
+          <Link href={nameLink}>
+            <Anchor<'a'> size="sm">{row.name}</Anchor>
+          </Link>
+        </td>
+        <td>{row.origin}</td>
+        <td>{row.guidanceType}</td>
+        <td>{row.loadFactorMax}</td>
+        <td>{row.machMax}</td>
+        <td>{row.warmUpTime}</td>
+        <td>{row.workTime}</td>
+        <td>{row.timeFire}</td>
+        <td>{row.sustainerTimeFire}</td>
+      </tr>
+    );
+  });
+
+  // const comparing = toCompare.map((value, index) => (
+  //   <>
+  //     <ListItem>
+  //       <UnstyledButton
+  //         onClick={(event) => {
+  //           let i = toCompare.indexOf(value);
+  //           if (i >= 0) {
+  //             toCompareHandlers.remove(i);
+  //           } else {
+  //             toCompareHandlers.append(value);
+  //           }
+  //         }}
+  //       >
+  //         <SquareMinus />
+  //       </UnstyledButton>
+  //       {value}
+  //     </ListItem>
+  //   </>
+  // <List.Item>
+
+  // </List.Item>
+  // ));
+
   return (
     <>
       <Title my="sm"> Missiles </Title>
+      <TextInput
+        placeholder="Search by any field"
+        my="md"
+        // mt="md"
+        icon={<Search size={14} />}
+        size="sm"
+        value={search}
+        onChange={handleSearchChange}
+        className={cx(classes.search)}
+      />
       <ScrollArea sx={{ height: 600 }}>
-        <TextInput
-          placeholder="Search by any field"
-          my="md"
-          // mt="md"
-          icon={<Search size={14} />}
-          size="sm"
-          value={search}
-          onChange={handleSearchChange}
-          className={cx(classes.search)}
-        />
         <Table
           horizontalSpacing="md"
           verticalSpacing="xs"
@@ -330,6 +465,7 @@ export function MissileTable({ missiles }: MissileTableProps) {
         >
           <thead className={cx(classes.header)}>
             <tr>
+              <ThCompare description="Add to compare" />
               <Th
                 sorted={sortBy === 'name'}
                 reversed={reverseSortDirection}
@@ -419,6 +555,106 @@ export function MissileTable({ missiles }: MissileTableProps) {
           </tbody>
         </Table>
       </ScrollArea>
+      <div>
+        <Title my="sm">Compare</Title>
+        {toCompare.length > 0 ? (
+          <ScrollArea sx={{ height: 600 }}>
+            <Table
+              horizontalSpacing="md"
+              verticalSpacing="xs"
+              sx={{ tableLayout: 'auto', minWidth: 200 }}
+            >
+              <thead className={cx(classes.header)}>
+                <tr>
+                  <ThCompare description="Remove from compare" />
+                  <Th
+                    sorted={sortBy === 'name'}
+                    reversed={reverseSortDirection}
+                    onSort={() => setSorting('name')}
+                    description="Missile name. Click to view raw data"
+                  >
+                    Name
+                  </Th>
+                  <Th
+                    sorted={sortBy === 'origin'}
+                    reversed={reverseSortDirection}
+                    onSort={() => setSorting('origin')}
+                    description="Country of origin"
+                  >
+                    Origin
+                  </Th>
+                  <Th
+                    sorted={sortBy === 'guidanceType'}
+                    reversed={reverseSortDirection}
+                    onSort={() => setSorting('guidanceType')}
+                    description="The type of guidance the missile uses"
+                  >
+                    GuidanceType
+                  </Th>
+                  <Th
+                    sorted={sortBy === 'loadFactorMax'}
+                    reversed={reverseSortDirection}
+                    onSort={() => setSorting('loadFactorMax')}
+                    description="Maximum G forces the missile can pull in-flight"
+                  >
+                    LoadFactor(g)
+                  </Th>
+                  <Th
+                    sorted={sortBy === 'machMax'}
+                    reversed={reverseSortDirection}
+                    onSort={() => setSorting('machMax')}
+                    description="Maximum speed achievable by missile"
+                  >
+                    MachMax
+                  </Th>
+                  <Th
+                    sorted={sortBy === 'warmUpTime'}
+                    reversed={reverseSortDirection}
+                    onSort={() => setSorting('warmUpTime')}
+                    description='How long it takes a missile to "spool up" and become ready to fire'
+                  >
+                    WarmUpTime(s)
+                  </Th>
+                  <Th
+                    sorted={sortBy === 'workTime'}
+                    reversed={reverseSortDirection}
+                    onSort={() => setSorting('workTime')}
+                    description="How long the missile searches for a target before deactivating"
+                  >
+                    WorkTime(s)
+                  </Th>
+                  <Th
+                    sorted={sortBy === 'timeFire'}
+                    reversed={reverseSortDirection}
+                    onSort={() => setSorting('timeFire')}
+                    description="How long the missile's rocket motor will burn for"
+                  >
+                    BurnTime(s)
+                  </Th>
+                  <Th
+                    sorted={sortBy === 'sustainerTimeFire'}
+                    reversed={reverseSortDirection}
+                    onSort={() => setSorting('sustainerTimeFire')}
+                    description="How long the missile's sustainer (secondary) rocket motor will burn for"
+                  >
+                    SustainerBurnTime(s)
+                  </Th>
+                </tr>
+              </thead>
+              <tbody>{comparing}</tbody>
+            </Table>
+          </ScrollArea>
+        ) : (
+          <tr>
+            <td>
+              <Text weight={500} align="center">
+                Add rows to compare
+              </Text>
+            </td>
+          </tr>
+        )}
+        {/* <List>{comparing}</List> */}
+      </div>
     </>
   );
 }
