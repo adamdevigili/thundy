@@ -305,10 +305,14 @@ export function MissileTable({ missiles }: MissileTableProps) {
   const { classes, cx } = useStyles();
 
   const [search, setSearch] = useState('');
+
   const [sortedData, setSortedData] = useState(data);
-  // const [toCompare, setToCompate] = useState([]);
-  const [sortBy, setSortBy] = useState<keyof MissileRow>(null);
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
+  const [sortBy, setSortBy] = useState<keyof MissileRow>(null);
+
+  const [sortedDataCompare, setSortedDataCompare] = useState([]);
+  const [reverseSortDirectionCompare, setReverseSortDirectionCompare] = useState(false);
+  const [sortByCompare, setSortByCompare] = useState<keyof MissileRow>(null);
 
   const [scrolled, setScrolled] = useState(false);
 
@@ -331,6 +335,13 @@ export function MissileTable({ missiles }: MissileTableProps) {
 
   const [toCompare, toCompareHandlers] = useListState<MissileRow>([]);
 
+  const setSortingCompare = (field: keyof MissileRow) => {
+    const reversed = field === sortByCompare ? !reverseSortDirectionCompare : false;
+    setReverseSortDirectionCompare(reversed);
+    setSortByCompare(field);
+    toCompareHandlers.setState(sortData(toCompare, { sortBy: field, reversed, search }));
+  };
+
   const rows = sortedData.map((row) => {
     const nameLink = `/missiles/${row.name}`;
     return (
@@ -341,10 +352,12 @@ export function MissileTable({ missiles }: MissileTableProps) {
               let i = toCompare.indexOf(row);
               if (i < 0) {
                 toCompareHandlers.append(row);
+              } else {
+                toCompareHandlers.remove(i);
               }
             }}
           >
-            <SquarePlus />
+            {toCompare.indexOf(row) < 0 ? <SquarePlus /> : <SquareMinus />}
             {/* <Checkbox
               onChange={(event) => {
                 let i = toCompare.indexOf(row.name);
@@ -566,73 +579,73 @@ export function MissileTable({ missiles }: MissileTableProps) {
                 <tr>
                   <ThCompare description="Remove from compare" />
                   <Th
-                    sorted={sortBy === 'name'}
-                    reversed={reverseSortDirection}
-                    onSort={() => setSorting('name')}
+                    sorted={sortByCompare === 'name'}
+                    reversed={reverseSortDirectionCompare}
+                    onSort={() => setSortingCompare('name')}
                     description="Missile name. Click to view raw data"
                   >
                     Name
                   </Th>
                   <Th
-                    sorted={sortBy === 'origin'}
-                    reversed={reverseSortDirection}
-                    onSort={() => setSorting('origin')}
+                    sorted={sortByCompare === 'origin'}
+                    reversed={reverseSortDirectionCompare}
+                    onSort={() => setSortingCompare('origin')}
                     description="Country of origin"
                   >
                     Origin
                   </Th>
                   <Th
-                    sorted={sortBy === 'guidanceType'}
-                    reversed={reverseSortDirection}
-                    onSort={() => setSorting('guidanceType')}
+                    sorted={sortByCompare === 'guidanceType'}
+                    reversed={reverseSortDirectionCompare}
+                    onSort={() => setSortingCompare('guidanceType')}
                     description="The type of guidance the missile uses"
                   >
                     GuidanceType
                   </Th>
                   <Th
-                    sorted={sortBy === 'loadFactorMax'}
-                    reversed={reverseSortDirection}
-                    onSort={() => setSorting('loadFactorMax')}
+                    sorted={sortByCompare === 'loadFactorMax'}
+                    reversed={reverseSortDirectionCompare}
+                    onSort={() => setSortingCompare('loadFactorMax')}
                     description="Maximum G forces the missile can pull in-flight"
                   >
                     LoadFactor(g)
                   </Th>
                   <Th
-                    sorted={sortBy === 'machMax'}
-                    reversed={reverseSortDirection}
-                    onSort={() => setSorting('machMax')}
+                    sorted={sortByCompare === 'machMax'}
+                    reversed={reverseSortDirectionCompare}
+                    onSort={() => setSortingCompare('machMax')}
                     description="Maximum speed achievable by missile"
                   >
                     MachMax
                   </Th>
                   <Th
-                    sorted={sortBy === 'warmUpTime'}
-                    reversed={reverseSortDirection}
-                    onSort={() => setSorting('warmUpTime')}
+                    sorted={sortByCompare === 'warmUpTime'}
+                    reversed={reverseSortDirectionCompare}
+                    onSort={() => setSortingCompare('warmUpTime')}
                     description='How long it takes a missile to "spool up" and become ready to fire'
                   >
                     WarmUpTime(s)
                   </Th>
                   <Th
-                    sorted={sortBy === 'workTime'}
-                    reversed={reverseSortDirection}
-                    onSort={() => setSorting('workTime')}
+                    sorted={sortByCompare === 'workTime'}
+                    reversed={reverseSortDirectionCompare}
+                    onSort={() => setSortingCompare('workTime')}
                     description="How long the missile searches for a target before deactivating"
                   >
                     WorkTime(s)
                   </Th>
                   <Th
-                    sorted={sortBy === 'timeFire'}
-                    reversed={reverseSortDirection}
-                    onSort={() => setSorting('timeFire')}
+                    sorted={sortByCompare === 'timeFire'}
+                    reversed={reverseSortDirectionCompare}
+                    onSort={() => setSortingCompare('timeFire')}
                     description="How long the missile's rocket motor will burn for"
                   >
                     BurnTime(s)
                   </Th>
                   <Th
-                    sorted={sortBy === 'sustainerTimeFire'}
-                    reversed={reverseSortDirection}
-                    onSort={() => setSorting('sustainerTimeFire')}
+                    sorted={sortByCompare === 'sustainerTimeFire'}
+                    reversed={reverseSortDirectionCompare}
+                    onSort={() => setSortingCompare('sustainerTimeFire')}
                     description="How long the missile's sustainer (secondary) rocket motor will burn for"
                   >
                     SustainerBurnTime(s)
