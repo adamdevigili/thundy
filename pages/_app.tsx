@@ -33,7 +33,7 @@ export default function App(props: AppPropsWithLayout & { colorScheme: ColorSche
 
   // Disable scrolling outside of app
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
+    // document.body.style.overflow = 'hidden';
   }, []);
 
   return getLayout(

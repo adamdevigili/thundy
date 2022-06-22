@@ -22,7 +22,7 @@ export default function Home() {
       </Text>
       <Text align="center" size="xl" sx={{ a: { color: '#666' } }} mx="auto" mt="xl">
         <div>
-          <Link href="/planes">
+          <Link href="/aircraft">
             <a>Aircraft</a>
           </Link>
         </div>
