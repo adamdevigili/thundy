@@ -22,7 +22,7 @@ export const baseRepoURL =
   'https://api.github.com/repos/gszabi99/War-Thunder-Datamine/contents/aces.vromfs.bin_u/gamedata';
 
 export const baseRawURL =
-  'https://raw.githubusercontent.com/gszabi99/War-Thunder-Datamine/master/aces.vromfs.bin_u/gamedata';
+  'https://raw.githubusercontent.com/gszabi99/War-Thunder-Datamine/2a14fa333e35b9ae9e4b6330485f89d11c5e41d4/aces.vromfs.bin_u/gamedata';
 
 export const repoMissilesPath = '/weapons/rocketguns';
 export const repoSensorsPath = '/sensors';

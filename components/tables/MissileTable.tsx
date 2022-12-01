@@ -16,7 +16,6 @@ import {
   List,
   Checkbox,
   Button,
-  ListItem,
 } from '@mantine/core';
 import {
   Selector,
@@ -100,6 +99,19 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
+export interface MissileAPI {
+  origin: string;
+  name: string;
+  guidanceType: string;
+  warmUpTime: string;
+  workTime: string;
+  loadFactorMax: string;
+  machMax: string;
+  burnTime: string;
+  sustainerBurnTime: string;
+  rawURL: string;
+}
+
 export interface MissileRow {
   origin: string;
   name: string;
@@ -108,8 +120,9 @@ export interface MissileRow {
   workTime: string;
   loadFactorMax: string;
   machMax: string;
-  timeFire: string;
-  sustainerTimeFire: string;
+  burnTime: string;
+  sustainerBurnTime: string;
+  rawURL: string;
 }
 
 export interface Comparable {
@@ -128,8 +141,8 @@ export interface MissileRowComparable {
   workTime?: Comparable;
   loadFactorMax?: Comparable;
   machMax?: Comparable;
-  timeFire?: Comparable;
-  sustainerTimeFire?: Comparable;
+  burnTime?: Comparable;
+  sustainerBurnTime?: Comparable;
 }
 
 // interface MissileTableProps {
@@ -137,7 +150,7 @@ export interface MissileRowComparable {
 // }
 
 export interface MissileTableProps {
-  missiles: Missile[];
+  missiles: MissileAPI[];
 }
 
 interface ThCompareProps {
@@ -173,41 +186,6 @@ function getCustomPropertyString(m: Missile, k: string): string {
   return '';
 }
 
-export function GetCustomPropertyString(m: Missile, k: string): string {
-  // console.log('getLoadFactor', m)
-  for (const f of m.rocket) {
-    if (f.hasOwnProperty(k)) {
-      return f[k];
-    }
-  }
-
-  return undefined;
-}
-
-export function GetGuidance(m: Missile): Guidance {
-  // console.log('missile', m);
-  // console.log(typeof m.rocket);
-  if (!Array.isArray(m.rocket)) {
-    // console.log('not a missile', m.mesh);
-    return undefined;
-  }
-
-  // console.log(m);
-
-  // console.log('getLoadFactor', m)
-  for (const f of m.rocket) {
-    // console.log(f);
-    if (f.hasOwnProperty('guidance')) {
-      if (f.guidance.hasOwnProperty('warmUpTime')) {
-        // console.log('found AAM', m.mesh);
-        return f.guidance as Guidance;
-      }
-    }
-  }
-
-  return undefined;
-}
-
 function getFlagEmoji(countryCode) {
   const codePoints = countryCode
     .toUpperCase()
@@ -216,28 +194,29 @@ function getFlagEmoji(countryCode) {
   return String.fromCodePoint(...codePoints);
 }
 
-function convertMissileToRow(m: Missile): MissileRow {
+function convertMissileAPIToRow(m: MissileAPI): MissileRow {
   // console.log('here\n', JSON.stringify(m));
 
   // const flag = flags[m.mesh.substring(0, 2).toUpperCase()];
   // console.log(flag.unicode)
 
-  const flag = getFlagEmoji(m.mesh.substring(0, 2));
+  // const flag = getFlagEmoji(m.mesh.substring(0, 2));
 
   const mRow: MissileRow = {
-    origin: flag,
+    origin: getFlagEmoji(m.origin),
     name: m.name,
-    guidanceType: getCustomPropertyString(m, 'guidanceType'),
-    loadFactorMax: getCustomPropertyNumber(m, 'loadFactorMax').toString(),
-    machMax: getCustomPropertyNumber(m, 'machMax').toString(),
-    warmUpTime: GetGuidance(m).warmUpTime.toString(),
-    workTime: GetGuidance(m).workTime.toString(),
-    timeFire: getCustomPropertyNumber(m, 'timeFire').toString(),
-    sustainerTimeFire: getCustomPropertyNumber(m, 'timeFire1').toString(),
+    guidanceType: m.guidanceType,
+    loadFactorMax: m.loadFactorMax,
+    machMax: m.machMax,
+    warmUpTime: m.warmUpTime,
+    workTime: m.workTime,
+    burnTime: m.burnTime,
+    sustainerBurnTime: m.sustainerBurnTime,
+    rawURL: m.rawURL,
   };
 
-  if (mRow.sustainerTimeFire === '-1') {
-    mRow.sustainerTimeFire = '-';
+  if (mRow.sustainerBurnTime === '') {
+    mRow.sustainerBurnTime = '-';
   }
 
   // console.log('there', mRow);
@@ -245,7 +224,7 @@ function convertMissileToRow(m: Missile): MissileRow {
   return mRow;
 }
 
-function convertMissilesToRows(missiles: Missile[]): MissileRow[] {
+function convertMissilesToRows(missiles: MissileAPI[]): MissileRow[] {
   // console.log('here\n', mp);
 
   // const mRow: MissileRow[] = [
@@ -257,7 +236,7 @@ function convertMissilesToRows(missiles: Missile[]): MissileRow[] {
   // ];
 
   // console.log('there', mRow);
-  return missiles.map((m) => convertMissileToRow(m));
+  return missiles.map((m) => convertMissileAPIToRow(m));
 }
 
 function Th({ children, reversed, sorted, onSort, description }: ThProps) {
@@ -517,8 +496,8 @@ export function MissileTable({ missiles }: MissileTableProps) {
         <td>{row.machMax}</td>
         <td>{row.warmUpTime}</td>
         <td>{row.workTime}</td>
-        <td>{row.timeFire}</td>
-        <td>{row.sustainerTimeFire}</td>
+        <td>{row.burnTime}</td>
+        <td>{row.sustainerBurnTime}</td>
       </tr>
     );
   });
@@ -556,9 +535,9 @@ export function MissileTable({ missiles }: MissileTableProps) {
         <td style={{ backgroundColor: comparingColored[i].machMax.color }}>{row.machMax}</td>
         <td style={{ backgroundColor: comparingColored[i].warmUpTime.color }}>{row.warmUpTime}</td>
         <td style={{ backgroundColor: comparingColored[i].workTime.color }}>{row.workTime}</td>
-        <td style={{ backgroundColor: comparingColored[i].timeFire.color }}>{row.timeFire}</td>
-        <td style={{ backgroundColor: comparingColored[i].sustainerTimeFire.color }}>
-          {row.sustainerTimeFire}
+        <td style={{ backgroundColor: comparingColored[i].burnTime.color }}>{row.burnTime}</td>
+        <td style={{ backgroundColor: comparingColored[i].sustainerBurnTime.color }}>
+          {row.sustainerBurnTime}
         </td>
       </tr>
     );
@@ -668,17 +647,17 @@ export function MissileTable({ missiles }: MissileTableProps) {
                 WorkTime(s)
               </Th>
               <Th
-                sorted={sortBy === 'timeFire'}
+                sorted={sortBy === 'burnTime'}
                 reversed={reverseSortDirection}
-                onSort={() => setSorting('timeFire')}
+                onSort={() => setSorting('burnTime')}
                 description="How long the missile's rocket motor will burn for"
               >
                 BurnTime(s)
               </Th>
               <Th
-                sorted={sortBy === 'sustainerTimeFire'}
+                sorted={sortBy === 'sustainerBurnTime'}
                 reversed={reverseSortDirection}
-                onSort={() => setSorting('sustainerTimeFire')}
+                onSort={() => setSorting('sustainerBurnTime')}
                 description="How long the missile's sustainer (secondary) rocket motor will burn for"
               >
                 SustainerBurnTime(s)
@@ -769,17 +748,17 @@ export function MissileTable({ missiles }: MissileTableProps) {
                     WorkTime(s)
                   </Th>
                   <Th
-                    sorted={sortByCompare === 'timeFire'}
+                    sorted={sortByCompare === 'burnTime'}
                     reversed={reverseSortDirectionCompare}
-                    onSort={() => setSortingCompare('timeFire')}
+                    onSort={() => setSortingCompare('burnTime')}
                     description="How long the missile's rocket motor will burn for"
                   >
                     BurnTime(s)
                   </Th>
                   <Th
-                    sorted={sortByCompare === 'sustainerTimeFire'}
+                    sorted={sortByCompare === 'sustainerBurnTime'}
                     reversed={reverseSortDirectionCompare}
-                    onSort={() => setSortingCompare('sustainerTimeFire')}
+                    onSort={() => setSortingCompare('sustainerBurnTime')}
                     description="How long the missile's sustainer (secondary) rocket motor will burn for"
                   >
                     SustainerBurnTime(s)

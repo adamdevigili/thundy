@@ -171,7 +171,7 @@ export function NavbarMinimalColored({ path }) {
       </Center> */}
       <Center>
         <Navbar.Section grow mt={30}>
-          <Group direction="column" align="center" spacing={0}>
+          <Group align="center" spacing={0}>
             {links}
           </Group>
         </Navbar.Section>

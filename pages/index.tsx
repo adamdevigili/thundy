@@ -1,7 +1,7 @@
 /* eslint-disable linebreak-style */
 
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
-import { Title, Text, Anchor, Center } from '@mantine/core';
+import { Title, Text, Anchor, Center, HoverCard, Group } from '@mantine/core';
 import type { ReactElement } from 'react';
 import { MissileTable } from '../components/tables/MissileTable';
 import { Missile } from '../data/missile';
@@ -22,16 +22,6 @@ export default function Home() {
       </Text>
       <Text align="center" size="xl" sx={{ a: { color: '#666' } }} mx="auto" mt="xl">
         <div>
-          <Link href="/aircraft">
-            <a>Aircraft</a>
-          </Link>
-        </div>
-        <div>
-          <Link href="/ground">
-            <a>Ground Vehicles</a>
-          </Link>
-        </div>
-        <div>
           <Link href="/missiles">
             <a>Missiles</a>
           </Link>
@@ -40,6 +30,30 @@ export default function Home() {
           <Link href="/radars">
             <a>Radars</a>
           </Link>
+        </div>
+        <div>
+          <HoverCard shadow="md">
+            <HoverCard.Target>
+              <Text>
+                <span style={{ textDecoration: 'line-through' }}>Aircraft</span>
+              </Text>
+            </HoverCard.Target>
+            <HoverCard.Dropdown>
+              <Text size="sm">soon™</Text>
+            </HoverCard.Dropdown>
+          </HoverCard>
+        </div>
+        <div>
+          <HoverCard shadow="md">
+            <HoverCard.Target>
+              <Text>
+                <span style={{ textDecoration: 'line-through' }}>Ground Vehicles</span>
+              </Text>
+            </HoverCard.Target>
+            <HoverCard.Dropdown>
+              <Text size="sm">soon™</Text>
+            </HoverCard.Dropdown>
+          </HoverCard>
         </div>
       </Text>
     </>

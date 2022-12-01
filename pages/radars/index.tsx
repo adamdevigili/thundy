@@ -118,7 +118,9 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
   async function resolveJSONPromises(promises) {
     for (let p of promises) {
-      sensorPromises[p.url] = await p.json();
+      if (p.status == 200) {
+        sensorPromises[p.url] = await p.json();
+      }
       // console.log(r.url);
     }
 

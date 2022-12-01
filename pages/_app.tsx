@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { AppProps } from 'next/app';
 import { getCookie, setCookies } from 'cookies-next';
 import Head from 'next/head';
-import { MantineProvider, ColorScheme, ColorSchemeProvider } from '@mantine/core';
+import { MantineProvider, ColorScheme, ColorSchemeProvider, Global } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
 import type { ReactElement, ReactNode } from 'react';
 import type { NextPage } from 'next';
@@ -19,6 +19,16 @@ type NextPageWithLayout = NextPage & {
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
+
+function MyGlobalStyles() {
+  return (
+    <Global
+      styles={(theme) => ({
+        '::-webkit-scrollbar': { display: 'none' },
+      })}
+    />
+  );
+}
 
 export default function App(props: AppPropsWithLayout & { colorScheme: ColorScheme }) {
   const { Component, pageProps } = props;
@@ -47,6 +57,7 @@ export default function App(props: AppPropsWithLayout & { colorScheme: ColorSche
       <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
         <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
           <NotificationsProvider>
+            <MyGlobalStyles />
             <Component {...pageProps} />
           </NotificationsProvider>
         </MantineProvider>

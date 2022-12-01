@@ -1,6 +1,5 @@
 import { baseRepoURL, GithubDirContents } from '../data/github';
 import { Missile } from '../data/missile';
-import { baseRawURL } from '../pages/missiles';
 
 // export async function getMissileData(name) {
 //   console.log(name);
