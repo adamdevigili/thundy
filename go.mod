@@ -1,6 +1,6 @@
 module github.com/adamdevigili/thundy
 
-go 1.19
+go 1.18
 
 require (
 	github.com/kelseyhightower/envconfig v1.4.0
@@ -26,6 +26,6 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 )
 
-replace github.com/adamdevigili/thundy/api/models v0.0.0 => ./api/models
+replace github.com/adamdevigili/thundy/api_pkg/models v0.0.0 => ./api_pkg/models
 
-replace github.com/adamdevigili/thundy/api/db v0.0.0 => ./api/db
+replace github.com/adamdevigili/thundy/api_pkg/db v0.0.0 => ./api_pkg/db

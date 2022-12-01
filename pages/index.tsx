@@ -27,9 +27,16 @@ export default function Home() {
           </Link>
         </div>
         <div>
-          <Link href="/radars">
-            <a>Radars</a>
-          </Link>
+          <HoverCard shadow="md">
+            <HoverCard.Target>
+              <Text>
+                <span style={{ textDecoration: 'line-through' }}>Radars</span>
+              </Text>
+            </HoverCard.Target>
+            <HoverCard.Dropdown>
+              <Text size="sm">soon™</Text>
+            </HoverCard.Dropdown>
+          </HoverCard>
         </div>
         <div>
           <HoverCard shadow="md">

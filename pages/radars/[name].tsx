@@ -13,37 +13,37 @@ import { Sensor } from '../../data/sensors';
 import { useScrollLock } from '@mantine/hooks';
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  console.log('fetching all missile file names');
-  const res = await fetch(`${baseRepoURL}${repoSensorsPath}`);
-  const files = (await res.json()) as GithubDirContents[];
+  // console.log('fetching all missile file names');
+  // const res = await fetch(`${baseRepoURL}${repoSensorsPath}`);
+  // const files = (await res.json()) as GithubDirContents[];
 
-  const paths = [];
+  // const paths = [];
 
-  for (const f of files) {
-    if (
-      f.name.includes('cn_') ||
-      f.name.includes('de_') ||
-      f.name.includes('fr_') ||
-      f.name.includes('il_') ||
-      f.name.includes('it_') ||
-      f.name.includes('jp_') ||
-      f.name.includes('su_') ||
-      f.name.includes('sw_') ||
-      f.name.includes('uk_') ||
-      f.name.includes('us_')
-    ) {
-      // console.log(`${baseRawURL}/${n}`);
-      paths.push({
-        params: {
-          name: f.name.split('.')[0],
-        },
-      });
-    }
+  // for (const f of files) {
+  //   if (
+  //     f.name.includes('cn_') ||
+  //     f.name.includes('de_') ||
+  //     f.name.includes('fr_') ||
+  //     f.name.includes('il_') ||
+  //     f.name.includes('it_') ||
+  //     f.name.includes('jp_') ||
+  //     f.name.includes('su_') ||
+  //     f.name.includes('sw_') ||
+  //     f.name.includes('uk_') ||
+  //     f.name.includes('us_')
+  //   ) {
+  //     // console.log(`${baseRawURL}/${n}`);
+  //     paths.push({
+  //       params: {
+  //         name: f.name.split('.')[0],
+  //       },
+  //     });
+  //   }
 
-    // if (n.includes('us_')) {
-    //   missileURLs.push(`${baseRawURL}/${n}`);
-    // }
-  }
+  //   // if (n.includes('us_')) {
+  //   //   missileURLs.push(`${baseRawURL}/${n}`);
+  //   // }
+  // }
 
   // const paths = files.filter((file) => {
   //   if (file.name.includes('us_aim9')) {
@@ -59,8 +59,13 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   // console.log('paths', paths);
 
+  // return {
+  //   paths,
+  //   fallback: false,
+  // };
+
   return {
-    paths,
+    paths: [],
     fallback: false,
   };
 };
@@ -99,7 +104,7 @@ export default function Name({ sensorProps }: InferGetStaticPropsType<typeof get
   return (
     <>
       <Title>{name}</Title>
-      <SensorCard sensorProps={sensorProps}></SensorCard>
+      {/* <SensorCard sensorProps={sensorProps}></SensorCard> */}
     </>
   );
 }

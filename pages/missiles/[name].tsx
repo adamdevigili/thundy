@@ -15,19 +15,6 @@ import { MissileTableProps, MissileTable, MissileAPI } from '../../components/ta
 import { MakeThundyAPIRequest } from '../../lib/api';
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  console.log('fetching all missile file names');
-  // let baseURL = '';
-  // if (process.env.REACT_APP_API_ENDPOINT) {
-  //   baseURL = process.env.REACT_APP_API_ENDPOINT;
-  // } else {
-  //   baseURL = 'https://www.thundy.xyz';
-  // }
-
-  // const apiURL = baseURL + '/api/missiles';
-  // console.log('apiURL', apiURL);
-  // const res = await fetch(apiURL);
-  // const missiles = (await res.json()) as MissileAPI[];
-
   const res = MakeThundyAPIRequest('/api/missiles');
   const missiles = (await (await res).json()) as MissileAPI[];
 
@@ -38,7 +25,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
     paths.push({
       params: {
         name: m.name,
-        rawURL: m.rawURL,
       },
     });
   }
@@ -54,8 +40,6 @@ export interface MissileProps {
 }
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  console.log('----------------');
-
   const resAPI = MakeThundyAPIRequest('/api/missiles?name=' + context.params.name);
   const missileAPI = (await (await resAPI).json()) as MissileAPI;
 

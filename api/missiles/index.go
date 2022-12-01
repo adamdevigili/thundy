@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/adamdevigili/thundy/api/db"
-	"github.com/adamdevigili/thundy/api/models"
+	"github.com/adamdevigili/thundy/api_pkg/db"
+	"github.com/adamdevigili/thundy/api_pkg/models"
 	"github.com/kelseyhightower/envconfig"
 	cmap "github.com/orcaman/concurrent-map/v2"
 	"github.com/rs/zerolog/log"
@@ -18,7 +18,6 @@ import (
 
 func MissileHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		fmt.Println(fmt.Sprintf("%+v", r.URL.Query()))
 		if len(r.URL.Query()[models.NameQueryKey]) > 0 {
 			GetMissile(w, r)
 		} else {

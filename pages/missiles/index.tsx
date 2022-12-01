@@ -15,8 +15,6 @@ import { url } from 'inspector';
 import { MakeThundyAPIRequest } from '../../lib/api';
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  console.log('getStaticProps ----------------');
-
   const res = MakeThundyAPIRequest('/api/missiles');
   const data = (await (await res).json()) as MissileAPI[];
 
