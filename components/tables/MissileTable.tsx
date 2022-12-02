@@ -27,10 +27,11 @@ import {
   SquarePlus,
   SquareMinus,
 } from 'tabler-icons-react';
-import { US } from 'country-flag-icons/string/3x2';
+import { CN, FlagComponent, FR, GB, IL, IT, RU, SE, US } from 'country-flag-icons/react/3x2';
 import { Guidance, Missile } from '../../data/missile';
 import Link from 'next/link';
 import { useListState } from '@mantine/hooks';
+
 // import flags from '../../data/flags.json';
 
 const comparisonColors = {
@@ -176,7 +177,7 @@ function getFlagEmoji(countryCode) {
 
 function convertMissileAPIToRow(m: MissileAPI): MissileRow {
   const mRow: MissileRow = {
-    origin: getFlagEmoji(m.origin),
+    origin: m.origin,
     name: m.name,
     guidanceType: m.guidanceType,
     loadFactorMax: m.loadFactorMax,
@@ -198,6 +199,28 @@ function convertMissileAPIToRow(m: MissileAPI): MissileRow {
 function convertMissilesToRows(missiles: MissileAPI[]): [MissileRow[], string] {
   const x = missiles[0].createdAt !== undefined ? missiles[0].createdAt.toLocaleString() : '';
   return [missiles.map((m) => convertMissileAPIToRow(m)), x];
+}
+
+function convertCountryCodeToFlag(code: string): any {
+  console.log('here', code);
+  switch (code) {
+    case 'us':
+      return <US style={{ height: 24, width: 16 }} />;
+    case 'su':
+      return <RU style={{ height: 24, width: 16 }} />;
+    case 'uk':
+      return <GB style={{ height: 24, width: 16 }} />;
+    case 'fr':
+      return <FR style={{ height: 24, width: 16 }} />;
+    case 'cn':
+      return <CN style={{ height: 24, width: 16 }} />;
+    case 'il':
+      return <IL style={{ height: 24, width: 16 }} />;
+    case 'it':
+      return <IT style={{ height: 24, width: 16 }} />;
+    case 'swd':
+      return <SE style={{ height: 24, width: 16 }} />;
+  }
 }
 
 function Th({ children, reversed, sorted, onSort, description }: ThProps) {
@@ -451,7 +474,7 @@ export function MissileTable({ missiles }: MissileTableProps) {
             <Anchor<'a'> size="sm">{row.name}</Anchor>
           </Link>
         </td>
-        <td>{row.origin}</td>
+        <td>{convertCountryCodeToFlag(row.origin)}</td>
         <td>{row.guidanceType}</td>
         <td>{row.loadFactorMax}</td>
         <td>{row.machMax}</td>

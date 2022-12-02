@@ -130,16 +130,6 @@ func GetMissile(w http.ResponseWriter, r *http.Request) {
 		log.Err(err).Msg("failed to find missile")
 		return
 	}
-	// if err != nil {
-	// 	log.Err(err).Msg("failed to find documents in collection")
-	// 	return
-	// }
-	// var results models.Missiles
-	// if err = cursor.All(context.TODO(), &results); err != nil {
-	// 	log.Err(err).Msg("failed to read documents in collection")
-	// 	return
-	// }
-	// cursor.Close(ctx)
 
 	log.Info().Msg("successfully retrieved latest data")
 	w.WriteHeader(http.StatusOK)
