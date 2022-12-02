@@ -33,6 +33,22 @@ const useStyles = createStyles((theme) => ({
     },
   },
 
+  linkDisabled: {
+    width: 50,
+    height: 50,
+    borderRadius: theme.radius.md,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: 'gray',
+    opacity: 0.85,
+
+    '&:hover': {
+      opacity: 1,
+      backgroundColor: theme.colors[theme.primaryColor][9],
+    },
+  },
+
   linkHome: {
     width: 50,
     height: 50,
@@ -114,12 +130,12 @@ function NavbarLinkHome({ icon: Icon, label, active, path, onClick }: NavbarLink
 }
 
 const routes = [
-  { icon: Home2, label: 'Home', path: '/' },
-  { icon: Plane, label: 'Aircraft', path: '/aircraft' },
-  { icon: Tank, label: 'Ground Vehicles', path: '/ground' },
-  { icon: Rocket, label: 'Missiles', path: '/missiles' },
-  { icon: Radar, label: 'Radars', path: '/radars' },
-  { icon: InfoSquare, label: 'About', path: '/about' },
+  { icon: Home2, label: 'Home', path: '/', active: true },
+  { icon: Plane, label: 'Aircraft', path: '/aircraft', active: false },
+  { icon: Tank, label: 'Ground Vehicles', path: '/ground', active: false },
+  { icon: Rocket, label: 'Missiles', path: '/missiles', active: true },
+  { icon: Radar, label: 'Radars', path: '/radars', active: false },
+  { icon: InfoSquare, label: 'About', path: '/about', active: true },
 ];
 
 const useNavbarStyles = createStyles((theme) => ({

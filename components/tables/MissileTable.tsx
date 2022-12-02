@@ -110,6 +110,7 @@ export interface MissileAPI {
   burnTime: string;
   sustainerBurnTime: string;
   rawURL: string;
+  createdAt: Date;
 }
 
 export interface MissileRow {
@@ -165,27 +166,6 @@ interface ThProps {
   description: string;
 }
 
-function getCustomPropertyNumber(m: Missile, k: string): number {
-  for (const f of m.rocket) {
-    if (f.hasOwnProperty(k)) {
-      return f[k];
-    }
-  }
-
-  return -1;
-}
-
-function getCustomPropertyString(m: Missile, k: string): string {
-  // console.log('getLoadFactor', m)
-  for (const f of m.rocket) {
-    if (f.hasOwnProperty(k)) {
-      return f[k];
-    }
-  }
-
-  return '';
-}
-
 function getFlagEmoji(countryCode) {
   const codePoints = countryCode
     .toUpperCase()
@@ -195,13 +175,6 @@ function getFlagEmoji(countryCode) {
 }
 
 function convertMissileAPIToRow(m: MissileAPI): MissileRow {
-  // console.log('here\n', JSON.stringify(m));
-
-  // const flag = flags[m.mesh.substring(0, 2).toUpperCase()];
-  // console.log(flag.unicode)
-
-  // const flag = getFlagEmoji(m.mesh.substring(0, 2));
-
   const mRow: MissileRow = {
     origin: getFlagEmoji(m.origin),
     name: m.name,
@@ -219,24 +192,12 @@ function convertMissileAPIToRow(m: MissileAPI): MissileRow {
     mRow.sustainerBurnTime = '-';
   }
 
-  // console.log('there', mRow);
-
   return mRow;
 }
 
-function convertMissilesToRows(missiles: MissileAPI[]): MissileRow[] {
-  // console.log('here\n', mp);
-
-  // const mRow: MissileRow[] = [
-  //   {
-  //     name: m.rawData.mesh,
-  //     loadFactorMax: getLoadFactor(m),
-  //     // warmUpTime: 10,
-  //   },
-  // ];
-
-  // console.log('there', mRow);
-  return missiles.map((m) => convertMissileAPIToRow(m));
+function convertMissilesToRows(missiles: MissileAPI[]): [MissileRow[], string] {
+  const x = missiles[0].createdAt !== undefined ? missiles[0].createdAt.toLocaleString() : '';
+  return [missiles.map((m) => convertMissileAPIToRow(m)), x];
 }
 
 function Th({ children, reversed, sorted, onSort, description }: ThProps) {
@@ -423,7 +384,7 @@ function convertMissileRowToMissileRowComparable(data: MissileRow[]): MissileRow
 }
 
 export function MissileTable({ missiles }: MissileTableProps) {
-  const data = convertMissilesToRows(missiles);
+  const [data, dataTimestamp] = convertMissilesToRows(missiles);
   const { classes, cx } = useStyles();
 
   const [search, setSearch] = useState('');
@@ -570,7 +531,17 @@ export function MissileTable({ missiles }: MissileTableProps) {
 
   return (
     <>
-      <Title my="sm">Missiles</Title>
+      <Group>
+        <Title my="sm" order={1}>
+          Missiles
+        </Title>
+        {dataTimestamp !== '' && (
+          <Title order={5} opacity="20%" sx={{ position: 'absolute', right: '10px' }}>
+            Updated: {dataTimestamp}
+          </Title>
+        )}
+      </Group>
+
       <TextInput
         placeholder="Search by any field"
         my="md"

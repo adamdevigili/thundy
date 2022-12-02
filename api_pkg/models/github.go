@@ -3,6 +3,8 @@ package models
 import (
 	"regexp"
 	"strings"
+
+	"github.com/rs/zerolog/log"
 )
 
 type RepoContents []RepoContent
@@ -54,7 +56,7 @@ func (rc RepoContents) FilterAAMs() RepoContents {
 
 const (
 	defaultExclusions = `default|cwp|bol_pod|launcher|chaff|rocket|lb|mm`
-	usExclusions      = `tow|tiny_tim|mighty_mouse|hydra|hvar|agm|stinger`
+	usExclusions      = `tow|tiny_tim|mighty_mouse|hydra|hvar|agm|stinger|fim`
 	ukExclusions      = `rp3|inch|crv7|hvar|uncle_tom`
 	swdExclusions     = `rb52|rb53|rb55|rb75|rb_05a`
 	ruExclusions      = `rs82|rs132|ros|rofs|rbs|m8|m13|kh|9m|3m|25ld`
@@ -71,19 +73,24 @@ var (
 	exclusions = []string{
 		defaultExclusions,
 		usExclusions,
-		ukExclusions,
-		swdExclusions,
-		ruExclusions,
+		// ukExclusions,
+		// swdExclusions,
+		// ruExclusions,
 	}
 )
 
 func (rc RepoContent) isAAM() bool {
 	// reInclude := regexp.MustCompile(buildInclusionRegEx())
-	reExclude := regexp.MustCompile(defaultExclusions)
+	reExclude := regexp.MustCompile(buildExclusionRegEx())
+	log.Info().Str("reExclude", reExclude.String()).Msg("excluding")
 
 	// return !reExclude.MatchString(rc.Name) && reInclude.MatchString(rc.Name)
 
-	return !reExclude.MatchString(rc.Name)
+	exclude := !reExclude.MatchString(rc.Name)
+	if exclude {
+		log.Info().Str("name", rc.Name).Msg("excluding object")
+	}
+	return exclude
 }
 
 func buildExclusionRegEx() string {

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/adamdevigili/thundy/api_pkg/db"
 	"github.com/adamdevigili/thundy/api_pkg/models"
@@ -225,7 +226,9 @@ func UpdateMissiles(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			apiModel := missileGithub.ToAPIModel(url)
+
+			apiModel := missileGithub.ToAPIModel(url, time.Now())
+
 
 			missiles.Set(apiModel.Name, apiModel)
 

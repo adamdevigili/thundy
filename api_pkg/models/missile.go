@@ -3,21 +3,23 @@ package models
 import (
 	"fmt"
 	"strings"
+	"time"
 )
 
 type Missiles []*Missile
 
 type Missile struct {
-	Origin            string `bson:"origin" json:"origin"`
-	Name              string `bson:"name" json:"name"`
-	GuidanceType      string `bson:"guidanceType" json:"guidanceType"`
-	WarmUpTime        string `bson:"warmUpTime" json:"warmUpTime"`
-	WorkTime          string `bson:"workTime" json:"workTime"`
-	LoadFactorMax     string `bson:"loadFactorMax" json:"loadFactorMax"`
-	MachMax           string `bson:"machMax" json:"machMax"`
-	BurnTime          string `bson:"burnTime" json:"burnTime"`
-	SustainerBurnTime string `bson:"sustainerBurnTime" json:"sustainerBurnTime"`
-	RawURL            string `bson:"rawURL" json:"rawURL"`
+	Origin            string    `bson:"origin" json:"origin"`
+	Name              string    `bson:"name" json:"name"`
+	GuidanceType      string    `bson:"guidanceType" json:"guidanceType"`
+	WarmUpTime        string    `bson:"warmUpTime" json:"warmUpTime"`
+	WorkTime          string    `bson:"workTime" json:"workTime"`
+	LoadFactorMax     string    `bson:"loadFactorMax" json:"loadFactorMax"`
+	MachMax           string    `bson:"machMax" json:"machMax"`
+	BurnTime          string    `bson:"burnTime" json:"burnTime"`
+	SustainerBurnTime string    `bson:"sustainerBurnTime" json:"sustainerBurnTime"`
+	RawURL            string    `bson:"rawURL" json:"rawURL"`
+	CreatedAt         time.Time `bson:"createdAt" json:"createdAt"`
 }
 
 type MissileGithub struct {
@@ -450,7 +452,7 @@ type MissileGithub struct {
 	} `json:"rocket"`
 }
 
-func (mg MissileGithub) ToAPIModel(url string) *Missile {
+func (mg MissileGithub) ToAPIModel(url string, createdAt time.Time) *Missile {
 	urlParts := strings.Split(url, "/")
 	filename := urlParts[len(urlParts)-1]
 
@@ -467,6 +469,7 @@ func (mg MissileGithub) ToAPIModel(url string) *Missile {
 		MachMax:       fmt.Sprintf("%.1f", mg.Rocket.MachMax),
 		BurnTime:      fmt.Sprintf("%.1f", mg.Rocket.TimeFire),
 		RawURL:        url,
+		CreatedAt:     createdAt,
 	}
 
 	// Missiles with a sustainer
