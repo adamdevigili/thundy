@@ -202,7 +202,6 @@ function convertMissilesToRows(missiles: MissileAPI[]): [MissileRow[], string] {
 }
 
 function convertCountryCodeToFlag(code: string): any {
-  console.log('here', code);
   switch (code) {
     case 'us':
       return <US style={{ height: 24, width: 16 }} />;
