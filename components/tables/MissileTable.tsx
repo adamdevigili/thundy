@@ -34,15 +34,6 @@ import { useListState } from '@mantine/hooks';
 
 // import flags from '../../data/flags.json';
 
-const comparisonColors = {
-  0: '#21A321', // Green
-  1: '#2D882D',
-  2: '#2D582D',
-  3: '#722D2D',
-  4: '#9C2A2A',
-  5: '#CE1B1B', // Red
-};
-
 const useStyles = createStyles((theme) => ({
   header: {
     position: 'sticky',
@@ -322,6 +313,34 @@ export interface ComparableWithIndex {
   index: number;
 }
 
+function componentToHex(c) {
+  var hex = c.toString(16);
+  return hex.length == 1 ? '0' + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+  return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+const green = [33, 170, 33];
+let [greenR, greenG, greenB] = [33, 170, 33];
+const red = [206, 27, 27];
+
+const comparisonColors = {
+  0: rgbToHex(green[0], green[1], green[2]), // Green
+  1: '#2D882D',
+  2: '#2D582D',
+  3: '#722D2D',
+  4: '#9C2A2A',
+  5: '#CE1B1B', // Red
+  // 0: '#00FF00', // Green
+  // 1: '#2D882D',
+  // 2: '#2D582D',
+  // 3: '#722D2D',
+  // 4: '#9C2A2A',
+  // 5: '#CE1B1B', // Red
+};
+
 // Color the fields of the provided rows, indicating the "best" as green, the "worst" as red, and apply a gradient
 // for the values in between
 function convertMissileRowToMissileRowComparable(data: MissileRow[]): MissileRowComparable[] {
@@ -329,10 +348,28 @@ function convertMissileRowToMissileRowComparable(data: MissileRow[]): MissileRow
 
   // build map of type -> array of object with value and index
   let compDict: { [key: string]: ComparableWithIndex[] } = {};
+  let colorGradient = [];
 
   if (data.length != 0) {
     let i = 0;
     for (var row of data) {
+      if (i === 0) {
+        colorGradient.push(green);
+      } else if (i === data.length - 1) {
+        colorGradient.push(red);
+      } else {
+        let newR = (red[0] - green[0]) / data.length + green[0];
+        let newG = (red[0] - green[0]) / data.length + green[0];
+        let newB = (red[0] - green[0]) / data.length + green[0];
+        let newColor = [
+          (((red[0] - green[0]) / data.length) | 0) + colorGradient[i - 1][0],
+          (((red[1] - green[1]) / data.length) | 0) + colorGradient[i - 1][1],
+          (((red[2] - green[2]) / data.length) | 0) + colorGradient[i - 1][2],
+        ];
+        colorGradient.push(newColor);
+      }
+
+      console.log(colorGradient);
       // console.log(row);
       let mrCmp: MissileRowComparable = {
         origin: row.origin,
@@ -389,7 +426,11 @@ function convertMissileRowToMissileRowComparable(data: MissileRow[]): MissileRow
           //   field.comparable.color = comparisonColors[Object.keys(comparisonColors).length - i - 1];
           // }
 
-          field.comparable.color = comparisonColors[i];
+          field.comparable.color = rgbToHex(
+            colorGradient[i][0],
+            colorGradient[i][1],
+            colorGradient[i][2]
+          );
         } else {
           field.comparable.color = 'none';
         }

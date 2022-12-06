@@ -48,31 +48,31 @@ export const baseRawURL =
 //   };
 // };
 
-// export interface MissileProps {
-//   missile;
-// }
+export interface MissileProps {
+  missile;
+}
 
-// export interface MissilePropsStatic {
-//   missileName;
-// }
+export interface MissilePropsStatic {
+  missileName;
+}
 
 // export const getStaticProps: GetStaticProps = async (context) => {
-//   // const resAPI = MakeThundyAPIRequest('/api/missiles?name=' + context.params.name);
-//   // const missileAPI = (await (await resAPI).json()) as MissileAPI;
+//   const resAPI = MakeThundyAPIRequest('/api/missiles?name=' + context.params.name);
+//   const missileAPI = (await (await resAPI).json()) as MissileAPI;
 
-//   // // console.log(context);
-//   // // const res = await fetch(context.params.rawURL as string);
+//   // console.log(context);
+//   // const res = await fetch(context.params.rawURL as string);
 //   // const res = await fetch(missileAPI.rawURL as string);
 
 //   // const missileData = await res.json();
 
-//   const missileProps: MissilePropsStatic = {
-//     missileName: context.params.name,
-//   };
+//   // const missileProps: MissilePropsStatic = {
+//   //   missileName: context.params.name,
+//   // };
 
 //   return {
 //     props: {
-//       missileProps,
+//       missileRawURL: missileAPI.rawURL,
 //     },
 //   };
 // };
