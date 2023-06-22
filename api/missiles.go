@@ -1,4 +1,4 @@
-package missiles
+package api
 
 import (
 	"context"
@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/adamdevigili/thundy/api_pkg/config"
 	"github.com/adamdevigili/thundy/api_pkg/db"
 	"github.com/adamdevigili/thundy/api_pkg/models"
-	"github.com/kelseyhightower/envconfig"
 	cmap "github.com/orcaman/concurrent-map/v2"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
@@ -31,31 +31,15 @@ func MissileHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetMissiles(w http.ResponseWriter, r *http.Request) {
 	log.Info().Fields(r).Msg("GetMissiles called")
-
 	ctx := context.Background()
 
-	w.Header().Set("Content-Type", "application/json")
-
-	var config models.Config
-	err := envconfig.Process("", &config)
+	config, err := config.InitHandler(w, r)
 	if err != nil {
-		log.Err(err).Msg("could not process environment variables")
+		log.Err(err).Msg("failed to init handler")
 		return
 	}
 
-	if config.VERCEL_ENV != "development" {
-		if r.Header.Get(models.APIKeyHeader) != config.THUNDY_API_KEY {
-			log.Error().Msgf("incoming request API key invalid: %s", r.Header.Get(models.APIKeyHeader))
-			fmt.Fprint(w, "not authorized")
-			w.WriteHeader(http.StatusUnauthorized)
-
-			return
-		}
-	} else {
-		log.Info().Msgf("%+v\n", config)
-	}
-
-	mongoClient, err := db.InitMongoClient(&config)
+	mongoClient, err := db.InitMongoClient(config)
 	if err != nil {
 		log.Err(err).Msg("failed to init mongo client")
 		return
@@ -89,31 +73,15 @@ func GetMissiles(w http.ResponseWriter, r *http.Request) {
 
 func GetMissile(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("GetMissile called")
-
 	ctx := context.Background()
 
-	w.Header().Set("Content-Type", "application/json")
-
-	var config models.Config
-	err := envconfig.Process("", &config)
+	config, err := config.InitHandler(w, r)
 	if err != nil {
-		log.Err(err).Msg("could not process environment variables")
+		log.Err(err).Msg("failed to init handler")
 		return
 	}
 
-	if config.VERCEL_ENV != "development" {
-		if r.Header.Get(models.APIKeyHeader) != config.THUNDY_API_KEY {
-			log.Error().Msgf("incoming request API key invalid: %s", r.Header.Get(models.APIKeyHeader))
-			fmt.Fprint(w, "not authorized")
-			w.WriteHeader(http.StatusUnauthorized)
-
-			return
-		}
-	} else {
-		log.Info().Msgf("%+v\n", config)
-	}
-
-	mongoClient, err := db.InitMongoClient(&config)
+	mongoClient, err := db.InitMongoClient(config)
 	if err != nil {
 		log.Err(err).Msg("failed to init mongo client")
 		return
@@ -142,27 +110,12 @@ func GetMissile(w http.ResponseWriter, r *http.Request) {
 
 func UpdateMissiles(w http.ResponseWriter, r *http.Request) {
 	log.Info().Fields(r).Msg("UpdateMissiles called")
-
 	ctx := context.Background()
-	w.Header().Set("Content-Type", "application/json")
 
-	var config models.Config
-	err := envconfig.Process("", &config)
+	config, err := config.InitHandler(w, r)
 	if err != nil {
-		log.Err(err).Msg("could not process environment variables")
+		log.Err(err).Msg("failed to init handler")
 		return
-	}
-
-	if config.VERCEL_ENV != "development" {
-		if r.Header.Get(models.APIKeyHeader) != config.THUNDY_API_KEY {
-			log.Error().Msgf("incoming request API key invalid: %s", r.Header.Get(models.APIKeyHeader))
-			fmt.Fprint(w, "not authorized")
-			w.WriteHeader(http.StatusUnauthorized)
-
-			return
-		}
-	} else {
-		log.Info().Msgf("%+v\n", config)
 	}
 
 	// Get list of files in missile directory
@@ -216,9 +169,7 @@ func UpdateMissiles(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-
 			apiModel := missileGithub.ToAPIModel(url, time.Now())
-
 
 			missiles.Set(apiModel.Name, apiModel)
 
@@ -229,7 +180,7 @@ func UpdateMissiles(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	// Store results in mongo collection
-	mongoClient, err := db.InitMongoClient(&config)
+	mongoClient, err := db.InitMongoClient(config)
 	if err != nil {
 		log.Err(err).Msg("failed to init mongo client")
 		return

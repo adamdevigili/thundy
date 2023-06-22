@@ -482,17 +482,6 @@ func (mg MissileGithub) ToAPIModel(url string, createdAt time.Time) *Missile {
 	return m
 }
 
-func stripFilename(filename string) string {
-	r := strings.NewReplacer(
-		".blkx", "",
-		"_sidewinder", "",
-		"_rocket", "",
-		"_sparrow", "",
-	)
-
-	return r.Replace(filename)
-}
-
 func (m Missiles) ToEmptyInterfaces() []interface{} {
 	ifs := make([]interface{}, len(m))
 	for i, s := range m {

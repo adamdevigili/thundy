@@ -28,4 +28,6 @@ require (
 
 replace github.com/adamdevigili/thundy/api_pkg/models v0.0.0 => ./api_pkg/models
 
+replace github.com/adamdevigili/thundy/api_pkg/config v0.0.0 => ./api_pkg/config
+
 replace github.com/adamdevigili/thundy/api_pkg/db v0.0.0 => ./api_pkg/db

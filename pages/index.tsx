@@ -31,7 +31,7 @@ export default function Home() {
     <>
       <Container>
         <Title sx={{ fontSize: 100, fontWeight: 900, letterSpacing: -2 }} align="center" mt={100}>
-          Thundy.xyz
+          Thundy
         </Title>
         <Text color="dimmed" align="center" size="lg" sx={{ maxWidth: 580 }} mx="auto" mt="xl">
           Datamined tables for War Thunder

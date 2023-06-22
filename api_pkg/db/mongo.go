@@ -5,7 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/adamdevigili/thundy/api_pkg/models"
+	"github.com/adamdevigili/thundy/api_pkg/config"
+
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -14,7 +15,7 @@ import (
 
 func Pass(w http.ResponseWriter, r *http.Request) {}
 
-func InitMongoClient(config *models.Config) (*mongo.Client, error) {
+func InitMongoClient(config *config.Config) (*mongo.Client, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 

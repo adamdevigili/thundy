@@ -54,6 +54,35 @@ func (rc RepoContents) FilterAAMs() RepoContents {
 	return filteredTargets
 }
 
+func (rc RepoContents) FilterRadars() RepoContents {
+	var filteredTargets RepoContents
+
+	seen := make(map[string]bool)
+
+	for _, file := range rc {
+		if _, ok := seen[file.Name]; !ok {
+			if file.isRadar() {
+				filteredTargets = append(filteredTargets, file)
+				log.Info().Str("file.Name", file.Name).Msg("including file")
+			}
+		}
+
+		// if strings.Contains(rc.Name, "us_") ||
+		// 	strings.Contains(rc.Name, "de_") ||
+		// 	strings.Contains(rc.Name, "fr_") ||
+		// 	strings.Contains(rc.Name, "il_") ||
+		// 	strings.Contains(rc.Name, "it_") ||
+		// 	strings.Contains(rc.Name, "jp_") ||
+		// 	strings.Contains(rc.Name, "su_") ||
+		// 	strings.Contains(rc.Name, "swd_") ||
+		// 	strings.Contains(rc.Name, "uk_") ||
+		// 	strings.Contains(rc.Name, "us_") {
+
+	}
+
+	return filteredTargets
+}
+
 const (
 	defaultExclusions = `default|cwp|bol_pod|launcher|chaff|rocket|lb|mm`
 	usExclusions      = `tow|tiny_tim|mighty_mouse|hydra|hvar|agm|stinger|fim`
@@ -64,11 +93,12 @@ const (
 
 var (
 	inclusions = []string{
-		"us_aim",
-		"uk_",
-		"swd_",
-		"su_",
-		"it_",
+		// "us_aim",
+		// "uk_",
+		// "swd_",
+		// "su_",
+		// "it_",
+		"us_",
 	}
 	exclusions = []string{
 		defaultExclusions,
@@ -93,10 +123,35 @@ func (rc RepoContent) isAAM() bool {
 	return exclude
 }
 
+func (rc RepoContent) isRadar() bool {
+	reInclude := regexp.MustCompile(buildInclusionRegEx())
+	// reExclude := regexp.MustCompile(buildExclusionRegEx())
+	// log.Info().Str("reExclude", reExclude.String()).Msg("excluding")
+
+	// return !reExclude.MatchString(rc.Name) && reInclude.MatchString(rc.Name)
+
+	include := reInclude.MatchString(rc.Name)
+	if include {
+		log.Info().Str("name", rc.Name).Msg("including object")
+	}
+	return include
+}
+
 func buildExclusionRegEx() string {
 	return strings.Join(exclusions, "|")
 }
 
 func buildInclusionRegEx() string {
 	return strings.Join(inclusions, "|")
+}
+
+func stripFilename(filename string) string {
+	r := strings.NewReplacer(
+		".blkx", "",
+		"_sidewinder", "",
+		"_rocket", "",
+		"_sparrow", "",
+	)
+
+	return r.Replace(filename)
 }
